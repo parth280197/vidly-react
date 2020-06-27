@@ -1,6 +1,6 @@
 import Like from "./common/Like/like";
 import React, {Component} from "react";
-import TableHeader from "./common/tableHeader/tableHeader";
+import Table from "./common/table/table";
 
 export class MoviesTable extends Component {
   columns = [
@@ -8,41 +8,34 @@ export class MoviesTable extends Component {
     {path: "genre.name", label: "Genre"},
     {path: "numberInStock", label: "Stock"},
     {path: "dailyRentalRate", label: "Rate"},
-    {key: "like"},
-    {key: "delete"},
+    {
+      key: "like",
+      content: (movie) => (
+        <Like liked={movie.liked} handleLike={() => this.props.onLike(movie)} />
+      ),
+    },
+    {
+      key: "delete",
+      content: (movie) => (
+        <button
+          onClick={() => this.props.onDelete(movie)}
+          className="btn btn-danger btn-sm"
+        >
+          Delete
+        </button>
+      ),
+    },
   ];
   render() {
-    const {movies, onDelete, onLike, sortColumn, onSort} = this.props;
+    const {movies, sortColumn, onSort} = this.props;
     const {columns} = this;
     return (
-      <table className="table">
-        <TableHeader
-          columns={columns}
-          sortColumn={sortColumn}
-          onSort={onSort}
-        />
-        <tbody>
-          {movies.map((movie) => (
-            <tr key={movie._id}>
-              <td>{movie.title}</td>
-              <td>{movie.genre.name}</td>
-              <td>{movie.numberInStock}</td>
-              <td>{movie.dailyRentalRate}</td>
-              <td>
-                <Like liked={movie.liked} handleLike={() => onLike(movie)} />
-              </td>
-              <td>
-                <button
-                  onClick={() => onDelete(movie)}
-                  className="btn btn-danger btn-sm"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table
+        columns={columns}
+        sortColumn={sortColumn}
+        onSort={onSort}
+        data={movies}
+      />
     );
   }
 }

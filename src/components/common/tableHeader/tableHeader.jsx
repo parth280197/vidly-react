@@ -1,6 +1,5 @@
 import React from "react";
-const TableHeader = (props) => {
-  const {columns, sortColumn: previousSortColumn, onSort} = props;
+const TableHeader = ({columns, sortColumn: previousSortColumn, onSort}) => {
   const raiseSort = (path) => {
     const sortColumn = {...previousSortColumn};
     if (sortColumn.path === path) {
@@ -11,6 +10,14 @@ const TableHeader = (props) => {
     }
     onSort(sortColumn);
   };
+
+  const renderSortIcon = (column) => {
+    if (column.path !== previousSortColumn.path) return null;
+    if (previousSortColumn.order === "asc")
+      return <i className="fa fa-sort-asc"></i>;
+    return <i className="fa fa-sort-desc"></i>;
+  };
+
   return (
     <thead>
       <tr>
@@ -20,7 +27,7 @@ const TableHeader = (props) => {
             style={{cursor: "pointer"}}
             onClick={() => raiseSort(c.path)}
           >
-            {c.label}
+            {c.label} {renderSortIcon(c)}
           </th>
         ))}
       </tr>
