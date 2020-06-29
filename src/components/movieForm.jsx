@@ -18,16 +18,15 @@ export default class MovieForm extends Form {
   };
 
   componentDidMount = () => {
-    if (this.props.match.params.id) {
-      const movie = getMovie(this.props.match.params.id);
-      if (movie) {
-        this.setState({data: this.mapRawToModel(movie)});
-      } else {
-        this.props.history.replace("/not-found");
-      }
-    }
     const genres = getGenres();
     this.setState({genres});
+
+    const movieId = this.props.match.params.id;
+    if (movieId === "new") return;
+
+    const movie = getMovie(this.props.match.params.id);
+    if (movie) return this.setState({data: this.mapRawToModel(movie)});
+    this.props.history.replace("/not-found");
   };
 
   mapRawToModel = (movie) => {
@@ -45,11 +44,11 @@ export default class MovieForm extends Form {
     title: Joi.string().required().label("Title"),
     genreId: Joi.string().required().label("Genere"),
     numberInStock: Joi.number()
-      .max(100)
       .min(0)
+      .max(100)
       .required()
       .label("Number in Stock"),
-    dailyRentalRate: Joi.number().max(100).min(0).required().label("Rate"),
+    dailyRentalRate: Joi.number().min(0).max(10).required().label("Rate"),
   };
 
   doSubmit = () => {
