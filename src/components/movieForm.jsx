@@ -20,10 +20,24 @@ export default class MovieForm extends Form {
   componentDidMount = () => {
     if (this.props.match.params.id) {
       const movie = getMovie(this.props.match.params.id);
-      console.log(movie);
+      if (movie) {
+        this.setState({data: this.mapRawToModel(movie)});
+      } else {
+        this.props.history.replace("/not-found");
+      }
     }
     const genres = getGenres();
     this.setState({genres});
+  };
+
+  mapRawToModel = (movie) => {
+    return {
+      dailyRentalRate: movie.dailyRentalRate,
+      genreId: movie.genre._id,
+      numberInStock: movie.numberInStock,
+      title: movie.title,
+      _id: movie._id,
+    };
   };
 
   schema = {

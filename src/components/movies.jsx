@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {getMovies} from "../services/fakeMovieService";
+import {getMovies, deleteMovie} from "../services/fakeMovieService";
 import Pagination from "./common/pagination/pagination";
 import {paginate} from "./../utils/paginate";
 import ListGroup from "./common/listGroup/listGroup";
@@ -23,8 +23,8 @@ class Movies extends Component {
   };
 
   handleDelete = (movie) => {
-    const movies = this.state.movies.filter((m) => m._id !== movie._id);
-    this.setState({movies});
+    deleteMovie(movie._id);
+    this.setState({movies: getMovies()});
   };
 
   handleLike = (movie) => {
