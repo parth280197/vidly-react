@@ -1,19 +1,33 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form/form";
+import {getGenres} from "../services/fakeGenreService";
+import {saveMovie, getMovie} from "../services/fakeMovieService";
 
 export default class MovieForm extends Form {
   state = {
     data: {
+      _id: "",
       title: "",
       genreId: "",
       numberInStock: "",
-      rate: "",
+      dailyRentalRate: "",
     },
+    genres: [],
     errors: {},
   };
 
+  componentDidMount = () => {
+    if (this.props.match.params.id) {
+      const movie = getMovie(this.props.match.params.id);
+      console.log(movie);
+    }
+    const genres = getGenres();
+    this.setState({genres});
+  };
+
   schema = {
+    _id: Joi.string().optional().allow(""),
     title: Joi.string().required().label("Title"),
     genreId: Joi.string().required().label("Genere"),
     numberInStock: Joi.number()
@@ -21,20 +35,24 @@ export default class MovieForm extends Form {
       .min(0)
       .required()
       .label("Number in Stock"),
-    rate: Joi.number().max(100).min(0).required().label("Rate"),
+    dailyRentalRate: Joi.number().max(100).min(0).required().label("Rate"),
   };
 
   doSubmit = () => {
-    console.log("Register");
+    saveMovie(this.state.data);
+    this.props.history.push("/movies");
   };
 
   render() {
+    const {genres} = this.state;
+
     return (
       <div>
         <form>
           {this.renderInput("title", "Title")}
+          {this.renderSelect("genreId", "Genre", genres, "Please select genre")}
           {this.renderInput("numberInStock", "Number in stock")}
-          {this.renderInput("rate", "Rate")}
+          {this.renderInput("dailyRentalRate", "Rate")}
           {this.renderSubmit("Save")}
         </form>
       </div>
