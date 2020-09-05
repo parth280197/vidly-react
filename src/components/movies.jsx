@@ -7,6 +7,7 @@ import {getGenres} from "../services/fakeGenreService";
 import MoviesTable from "./moviesTable";
 import {Link} from "react-router-dom";
 import _ from "lodash";
+import SearchBox from "./common/searchBox/searchBox";
 
 class Movies extends Component {
   state = {
@@ -14,6 +15,7 @@ class Movies extends Component {
     genres: [],
     pageSize: 4,
     currentPage: 1,
+    query: "",
     sortColumn: {path: "title", order: "asc"},
   };
 
@@ -35,6 +37,10 @@ class Movies extends Component {
     this.setState({movies});
   };
 
+  handleSearch = (query) => {
+    this.setState({query, currentPage: 1, selectedGenre: null});
+  };
+
   handlePageChange = (page) => {
     this.setState({currentPage: page});
   };
@@ -54,12 +60,21 @@ class Movies extends Component {
       selectedGenre,
       movies: allMovies,
       sortColumn,
+      query,
     } = this.state;
 
-    const filteredMovies =
-      selectedGenre && selectedGenre._id
-        ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
-        : allMovies;
+    let filteredMovies;
+
+    if (query) {
+      filteredMovies = allMovies.filter((movie) =>
+        movie.title.toLowerCase().includes(query.toLowerCase())
+      );
+    } else {
+      filteredMovies =
+        selectedGenre && selectedGenre._id
+          ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
+          : allMovies;
+    }
 
     const sortedMovies = _.orderBy(
       filteredMovies,
@@ -90,7 +105,14 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
-          <div className="row ml-1 mb-1">
+          <div className="row mb-2">
+            <SearchBox
+              placeholder="Search movie..."
+              onChange={this.handleSearch}
+              value={this.state.query}
+            />
+          </div>
+          <div className="row mb-1">
             <Link className="btn btn-primary" to="/movies/new">
               New Movie
             </Link>
